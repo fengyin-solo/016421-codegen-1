@@ -9,6 +9,7 @@
           <span><el-icon><User /></el-icon> {{ newsDetail.author }}</span>
           <span><el-icon><Calendar /></el-icon> {{ formatDate(newsDetail.publishTime) }}</span>
           <span><el-icon><View /></el-icon> {{ newsDetail.viewCount }} 阅读</span>
+          <span><el-icon><ChatDotRound /></el-icon> {{ commentCount }} 评论</span>
         </div>
       </div>
     </header>
@@ -22,8 +23,10 @@
       </div>
 
       <div class="content-wrapper">
-        <!-- 文章主体 -->
-        <article class="article-main">
+        <!-- 主列：文章主体 + 评论区 -->
+        <div class="main-column">
+          <!-- 文章主体 -->
+          <article class="article-main">
           <div class="article-cover">
             <img :src="newsDetail.coverImage" :alt="newsDetail.title" />
           </div>
@@ -70,6 +73,10 @@
           </footer>
         </article>
 
+          <!-- 评论区 -->
+          <CommentSection target-type="news" :target-id="newsId" />
+        </div>
+
         <!-- 侧边栏 -->
         <aside class="article-sidebar">
           <div class="sidebar-card">
@@ -96,13 +103,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import CommentSection from '@/components/common/CommentSection.vue'
+import { useCommentStore } from '@/stores/comment'
 import type { NewsItem } from '@/types'
 
 const router = useRouter()
 const route = useRoute()
+const commentStore = useCommentStore()
+
+// 评论归属当前路由对应的新闻，保证与列表卡片上的条数一致
+const newsId = computed(() => {
+  const id = Number(route.params.id)
+  return Number.isFinite(id) && id > 0 ? id : newsDetail.value.id
+})
+
+const commentCount = computed(() => commentStore.getCommentCount('news', newsId.value))
 
 const handleNotImplemented = () => {
   ElMessage.info('功能开发中，敬请期待')
@@ -252,6 +270,13 @@ onMounted(() => {
   grid-template-columns: 1fr 320px;
   gap: $spacing-xl;
   align-items: start;
+}
+
+.main-column {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+  min-width: 0;
 }
 
 // ==================== 文章主体 ====================

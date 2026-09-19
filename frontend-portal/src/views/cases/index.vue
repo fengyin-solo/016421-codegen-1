@@ -67,6 +67,10 @@
                 </el-button>
               </div>
               <div class="case-industry">{{ caseItem.industry }}</div>
+              <div class="case-comment-badge">
+                <el-icon><ChatDotRound /></el-icon>
+                {{ commentStore.getCommentCount('case', caseItem.id) }} 条评论
+              </div>
             </div>
             <div class="case-content">
               <div class="case-meta">
@@ -234,6 +238,10 @@
               <el-icon><Calendar /></el-icon>
               时间：{{ currentCase.publishTime }}
             </span>
+            <span class="meta-item">
+              <el-icon><ChatDotRound /></el-icon>
+              评论：{{ commentStore.getCommentCount('case', currentCase.id) }} 条
+            </span>
           </div>
 
           <div class="detail-tags">
@@ -268,6 +276,11 @@
             </div>
           </div>
         </div>
+
+        <!-- 评论区 -->
+        <div class="detail-comments">
+          <CommentSection target-type="case" :target-id="currentCase.id" />
+        </div>
       </div>
 
       <template #footer>
@@ -284,8 +297,11 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import CommentSection from '@/components/common/CommentSection.vue'
+import { useCommentStore } from '@/stores/comment'
 import type { CaseItem, ConsultationForm } from '@/types'
 
+const commentStore = useCommentStore()
 const loading = ref(false)
 const detailVisible = ref(false)
 const submitting = ref(false)
@@ -920,6 +936,26 @@ onMounted(() => {
       font-weight: 600;
       border-radius: $border-radius-full;
     }
+
+    .case-comment-badge {
+      position: absolute;
+      top: $spacing-md;
+      right: $spacing-md;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: $spacing-xs $spacing-md;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(6px);
+      color: white;
+      font-size: $font-size-xs;
+      font-weight: 500;
+      border-radius: $border-radius-full;
+
+      .el-icon {
+        font-size: 13px;
+      }
+    }
   }
 
   .case-content {
@@ -1334,6 +1370,16 @@ onMounted(() => {
       }
     }
   }
+
+  // 详情弹窗内的评论区
+  .detail-comments {
+    padding: 0 $spacing-xxl $spacing-xxl;
+
+    .comment-section {
+      box-shadow: none;
+      border: 1px solid $border-color-light;
+    }
+  }
 }
 
 // ==================== 响应式 ====================
@@ -1424,6 +1470,10 @@ onMounted(() => {
             grid-template-columns: 1fr 1fr;
           }
         }
+      }
+
+      .detail-comments {
+        padding: 0 $spacing-xl $spacing-xl;
       }
     }
   }

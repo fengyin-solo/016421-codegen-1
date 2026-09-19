@@ -52,6 +52,10 @@
               <span>{{ featuredNews.author }}</span>
               <span>·</span>
               <span>{{ formatDate(featuredNews.publishTime) }}</span>
+              <span>·</span>
+              <span class="meta-comments">
+                <el-icon><ChatDotRound /></el-icon> {{ commentStore.getCommentCount('news', featuredNews.id) }} 条评论
+              </span>
             </div>
           </div>
         </div>
@@ -76,9 +80,14 @@
               <p>{{ news.summary }}</p>
               <div class="news-footer">
                 <span class="news-author">{{ news.author }}</span>
-                <span class="news-views">
-                  <el-icon><View /></el-icon> {{ news.viewCount }}
-                </span>
+                <div class="news-stats">
+                  <span class="news-views">
+                    <el-icon><View /></el-icon> {{ news.viewCount }}
+                  </span>
+                  <span class="news-comments">
+                    <el-icon><ChatDotRound /></el-icon> {{ commentStore.getCommentCount('news', news.id) }}
+                  </span>
+                </div>
               </div>
             </div>
           </article>
@@ -105,9 +114,11 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { useCommentStore } from '@/stores/comment'
 import type { NewsItem } from '@/types'
 
 const router = useRouter()
+const commentStore = useCommentStore()
 const activeCategory = ref('')
 const searchKeyword = ref('')
 
@@ -406,6 +417,12 @@ const formatDate = (dateStr: string) => {
       gap: $spacing-sm;
       font-size: $font-size-sm;
       color: $text-color-secondary;
+
+      .meta-comments {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
     }
   }
 }
@@ -504,8 +521,15 @@ const formatDate = (dateStr: string) => {
       border-top: 1px solid $border-color-light;
       font-size: $font-size-sm;
       color: $text-color-secondary;
-      
-      .news-views {
+
+      .news-stats {
+        display: flex;
+        align-items: center;
+        gap: $spacing-md;
+      }
+
+      .news-views,
+      .news-comments {
         display: flex;
         align-items: center;
         gap: 4px;

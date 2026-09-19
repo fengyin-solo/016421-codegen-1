@@ -82,6 +82,24 @@ export interface ConsultationForm {
   requirement: string
 }
 
+// ==================== 评论相关 ====================
+export type CommentTargetType = 'news' | 'case'
+
+export interface CommentItem {
+  id: string
+  targetType: CommentTargetType
+  targetId: number
+  nickname: string
+  content: string
+  createTime: number
+  ownerKey: string
+}
+
+export interface CommentForm {
+  nickname: string
+  content: string
+}
+
 // ==================== 导航菜单 ====================
 export interface NavItem {
   name: string
