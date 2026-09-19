@@ -74,9 +74,15 @@
                   <el-icon><OfficeBuilding /></el-icon>
                   {{ caseItem.client }}
                 </span>
-                <span class="case-date">
-                  <el-icon><Calendar /></el-icon>
-                  {{ caseItem.publishTime }}
+                <span class="case-meta-right">
+                  <span class="case-comments">
+                    <el-icon><ChatDotRound /></el-icon>
+                    {{ commentsStore.countOf('case', caseItem.id) }} 条评论
+                  </span>
+                  <span class="case-date">
+                    <el-icon><Calendar /></el-icon>
+                    {{ caseItem.publishTime }}
+                  </span>
                 </span>
               </div>
               <h3 class="case-title">{{ caseItem.title }}</h3>
@@ -268,6 +274,11 @@
             </div>
           </div>
         </div>
+
+        <!-- 评论互动 -->
+        <div class="detail-comments">
+          <CommentSection target-type="case" :target-id="currentCase.id" />
+        </div>
       </div>
 
       <template #footer>
@@ -285,6 +296,10 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import type { CaseItem, ConsultationForm } from '@/types'
+import CommentSection from '@/components/common/CommentSection.vue'
+import { useCommentsStore } from '@/stores/comments'
+
+const commentsStore = useCommentsStore()
 
 const loading = ref(false)
 const detailVisible = ref(false)
@@ -942,6 +957,25 @@ onMounted(() => {
           font-size: 12px;
         }
       }
+
+      .case-meta-right {
+        display: flex;
+        align-items: center;
+        gap: $spacing-md;
+      }
+
+      .case-comments {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: $font-size-xs;
+        font-weight: 500;
+        color: $primary-color;
+
+        .el-icon {
+          font-size: 12px;
+        }
+      }
     }
 
     .case-title {
@@ -1333,6 +1367,16 @@ onMounted(() => {
         }
       }
     }
+
+    .detail-comments {
+      padding: 0 $spacing-xxl $spacing-xxl;
+
+      .comment-section {
+        background: $bg-color-light;
+        box-shadow: none;
+        border: 1px solid $border-color-light;
+      }
+    }
   }
 }
 
@@ -1424,6 +1468,10 @@ onMounted(() => {
             grid-template-columns: 1fr 1fr;
           }
         }
+      }
+
+      .detail-comments {
+        padding: 0 $spacing-xl $spacing-xl;
       }
     }
   }

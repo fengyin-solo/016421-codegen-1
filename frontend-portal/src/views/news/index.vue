@@ -52,6 +52,10 @@
               <span>{{ featuredNews.author }}</span>
               <span>·</span>
               <span>{{ formatDate(featuredNews.publishTime) }}</span>
+              <span class="featured-comments">
+                <el-icon><ChatDotRound /></el-icon>
+                {{ commentsStore.countOf('news', featuredNews.id) }} 条评论
+              </span>
             </div>
           </div>
         </div>
@@ -76,8 +80,14 @@
               <p>{{ news.summary }}</p>
               <div class="news-footer">
                 <span class="news-author">{{ news.author }}</span>
-                <span class="news-views">
-                  <el-icon><View /></el-icon> {{ news.viewCount }}
+                <span class="news-stats">
+                  <span class="news-views">
+                    <el-icon><View /></el-icon> {{ news.viewCount }}
+                  </span>
+                  <span class="news-comments">
+                    <el-icon><ChatDotRound /></el-icon>
+                    {{ commentsStore.countOf('news', news.id) }}
+                  </span>
                 </span>
               </div>
             </div>
@@ -106,8 +116,10 @@ import { useRouter } from 'vue-router'
 import { Search } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import type { NewsItem } from '@/types'
+import { useCommentsStore } from '@/stores/comments'
 
 const router = useRouter()
+const commentsStore = useCommentsStore()
 const activeCategory = ref('')
 const searchKeyword = ref('')
 
@@ -406,6 +418,14 @@ const formatDate = (dateStr: string) => {
       gap: $spacing-sm;
       font-size: $font-size-sm;
       color: $text-color-secondary;
+
+      .featured-comments {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: $primary-color;
+        font-weight: 500;
+      }
     }
   }
 }
@@ -505,10 +525,21 @@ const formatDate = (dateStr: string) => {
       font-size: $font-size-sm;
       color: $text-color-secondary;
       
-      .news-views {
+      .news-views,
+      .news-comments {
         display: flex;
         align-items: center;
         gap: 4px;
+      }
+
+      .news-comments {
+        color: $primary-color;
+      }
+
+      .news-stats {
+        display: flex;
+        align-items: center;
+        gap: $spacing-md;
       }
     }
   }

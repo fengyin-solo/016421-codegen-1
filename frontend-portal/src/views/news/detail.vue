@@ -9,6 +9,7 @@
           <span><el-icon><User /></el-icon> {{ newsDetail.author }}</span>
           <span><el-icon><Calendar /></el-icon> {{ formatDate(newsDetail.publishTime) }}</span>
           <span><el-icon><View /></el-icon> {{ newsDetail.viewCount }} 阅读</span>
+          <span><el-icon><ChatDotRound /></el-icon> {{ commentCount }} 评论</span>
         </div>
       </div>
     </header>
@@ -75,9 +76,9 @@
           <div class="sidebar-card">
             <h3>相关推荐</h3>
             <div class="related-list">
-              <div 
-                v-for="item in relatedNews" 
-                :key="item.id" 
+              <div
+                v-for="item in relatedNews"
+                :key="item.id"
                 class="related-item"
                 @click="router.push(`/news/${item.id}`)"
               >
@@ -91,18 +92,31 @@
           </div>
         </aside>
       </div>
+
+      <!-- 评论互动 -->
+      <CommentSection
+        class="article-comments"
+        target-type="news"
+        :target-id="newsId"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import type { NewsItem } from '@/types'
+import CommentSection from '@/components/common/CommentSection.vue'
+import { useCommentsStore } from '@/stores/comments'
 
 const router = useRouter()
 const route = useRoute()
+const commentsStore = useCommentsStore()
+
+const newsId = computed(() => Number(route.params.id))
+const commentCount = computed(() => commentsStore.countOf('news', newsId.value))
 
 const handleNotImplemented = () => {
   ElMessage.info('功能开发中，敬请期待')
@@ -252,6 +266,10 @@ onMounted(() => {
   grid-template-columns: 1fr 320px;
   gap: $spacing-xl;
   align-items: start;
+}
+
+.article-comments {
+  margin-top: $spacing-xl;
 }
 
 // ==================== 文章主体 ====================

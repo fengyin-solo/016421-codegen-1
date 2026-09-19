@@ -1,4 +1,5 @@
 export { newsApi } from './news'
 export { contactApi } from './contact'
 export { casesApi } from './cases'
+export { commentsApi, getVisitorId, getLastNickname } from './comment'
 export { request } from './request'

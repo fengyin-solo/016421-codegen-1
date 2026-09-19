@@ -41,6 +41,7 @@ pnpm-debug.log*
 
 # Test
 coverage/
+.tmp-test/
 
 # Misc
 *.pem

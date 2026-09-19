@@ -82,6 +82,46 @@ export interface ConsultationForm {
   requirement: string
 }
 
+// ==================== 评论相关 ====================
+// 评论所属内容类型：新闻 / 案例
+export type CommentTargetType = 'news' | 'case'
+
+export interface CommentItem {
+  id: string
+  targetType: CommentTargetType
+  targetId: number
+  nickname: string
+  content: string
+  createTime: string
+  // 发表者访客标识，用于判断是否为本人评论（可删除）
+  visitorId: string
+}
+
+export interface CommentCreateParams {
+  targetType: CommentTargetType
+  targetId: number
+  nickname: string
+  content: string
+}
+
+// 评论提交失败时的业务错误码
+export type CommentErrorCode =
+  | 'EMPTY_NICKNAME'
+  | 'NICKNAME_TOO_LONG'
+  | 'CONTENT_TOO_SHORT'
+  | 'CONTENT_TOO_LONG'
+  | 'DUPLICATE_CONTENT'
+  | 'NETWORK_ERROR'
+
+export class CommentError extends Error {
+  code: CommentErrorCode
+  constructor(code: CommentErrorCode, message: string) {
+    super(message)
+    this.code = code
+    this.name = 'CommentError'
+  }
+}
+
 // ==================== 导航菜单 ====================
 export interface NavItem {
   name: string
